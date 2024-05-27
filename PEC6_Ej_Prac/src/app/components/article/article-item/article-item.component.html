@@ -1,11 +1,8 @@
 <div class="article-item" [ngClass]="{ 'en-venta': article.isOnSale }">
-  <img
-    src="./../../../../assets/img/{{ article.imageUrl }}"
-    alt="{{ article.name }}"
-  />
+  <img [src]="article.imageUrl | articleImage" [alt]="article.name" />
   <h2>{{ article.name }}</h2>
   <p [ngClass]="{ 'precio-gris': !article.isOnSale }">
-    {{ article.price | currency : "EUR" : true }}
+    {{ article.price | formatoMoneda }}
   </p>
   <span *ngIf="article.isOnSale">¡En oferta!</span>
   <p *ngIf="article.isOnSale">En la cesta: {{ article.quantityInCart }}</p>

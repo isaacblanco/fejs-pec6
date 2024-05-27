@@ -1,9 +1,17 @@
-<h2>Catalogo de productos</h2>
+<h2>Catálogo de productos</h2>
 
-<!-- TEST : uso de estilos inline -->
+<form [formGroup]="searchForm">
+  <input
+    type="text"
+    formControlName="query"
+    placeholder="Buscar por nombre"
+    style="width: 100%"
+  />
+</form>
+
 <div style="flex-direction: row; display: flex">
   <span
-    *ngFor="let article of articles"
+    *ngFor="let article of articles$ | async"
     style="
       align-items: flex-start;
       border: 1px solid #ccc;

@@ -1,36 +1,42 @@
-import { Component } from '@angular/core';
-import { Article } from 'src/app/models/article';
-import { ArticleQuantityChange } from 'src/app/models/article-quantity-change';
+import { Component, OnInit } from "@angular/core";
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { Observable } from "rxjs";
+import {
+  debounceTime,
+  distinctUntilChanged,
+  startWith,
+  switchMap,
+} from "rxjs/operators";
+import { Article } from "src/app/models/article";
+import { ArticleQuantityChange } from "src/app/models/article-quantity-change";
+import { ArticleServiceService } from "src/app/services/article-service.service";
 
 @Component({
-  selector: 'app-article-list',
-  templateUrl: './article-list.component.html',
-  styleUrls: ['./article-list.component.scss'],
+  selector: "app-article-list",
+  templateUrl: "./article-list.component.html",
+  styleUrls: ["./article-list.component.scss"],
 })
-export class ArticleListComponent {
-  articles: Article[] = [
-    {
-      name: 'Artículo 1',
-      imageUrl: 'nothing.jpg',
-      price: 10.0,
-      isOnSale: true,
-      quantityInCart: 1,
-    },
-    {
-      name: 'Artículo 2',
-      imageUrl: 'nothing.jpg',
-      price: 20.5,
-      isOnSale: true,
-      quantityInCart: 1,
-    },
-    {
-      name: 'Artículo 3',
-      imageUrl: 'nothing.jpg',
-      price: 15.5,
-      isOnSale: false,
-      quantityInCart: 0,
-    },
-  ];
+export class ArticleListComponent implements OnInit {
+  articles$: Observable<Article[]> | undefined;
+  searchForm: FormGroup;
+
+  constructor(
+    private articleService: ArticleServiceService,
+    private fb: FormBuilder
+  ) {
+    this.searchForm = this.fb.group({
+      query: [""],
+    });
+  }
+
+  ngOnInit() {
+    this.articles$ = this.searchForm.get("query")!.valueChanges.pipe(
+      startWith(""), // Emit the initial value for the search input
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((query) => this.articleService.getArticles(query))
+    );
+  }
 
   emitirIncrementoCantidad(article: Article) {
     article.quantityInCart++;

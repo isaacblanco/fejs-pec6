@@ -1,18 +1,22 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { Article } from "./../models/article";
 
 @Injectable({
-  providedIn: "root", // REQUERIDO: registrar el servicio a nivel global
+  providedIn: "root", // Registrar el servicio a nivel global
 })
 export class ArticleServiceService {
-  private apiUrl = "http://pendiente"; //
+  private apiUrl = "http://localhost:3000/api/articles";
 
   constructor(private http: HttpClient) {}
 
-  getArticles(): Observable<Article[]> {
-    return this.http.get<Article[]>(this.apiUrl);
+  getArticles(query?: string): Observable<Article[]> {
+    let params = new HttpParams();
+    if (query) {
+      params = params.set("q", query);
+    }
+    return this.http.get<Article[]>(this.apiUrl, { params });
   }
 
   changeQuantity(
@@ -20,7 +24,7 @@ export class ArticleServiceService {
     changeInQuantity: number
   ): Observable<Article> {
     return this.http.patch<Article>(`${this.apiUrl}/${articleId}`, {
-      quantity: changeInQuantity,
+      changeInQuantity,
     });
   }
 
